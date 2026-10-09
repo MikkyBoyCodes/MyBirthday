@@ -1,0 +1,41 @@
+@import "./tailwind.css";
+@import "./typography.css";
+@import "./animations.css";
+@import "./responsive.css";
+
+:root {
+  color-scheme: dark;
+  font-family: var(--font-body);
+  background: #070707;
+  color: #f4f3f1;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #070707;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #070707;
+}
+
+button {
+  font: inherit;
+}
+
+button:focus-visible {
+  outline: 1px solid rgba(205, 224, 255, 0.9);
+  outline-offset: 4px;
+}
+
+::selection {
+  background: rgba(191, 219, 254, 0.2);
+}

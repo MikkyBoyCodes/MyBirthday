@@ -1,0 +1,8 @@
+.site-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.7rem clamp(1rem, 4vw, 4rem) calc(1.7rem + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255,255,255,.05); background: #070707; }
+.site-footer p { margin: 0; color: rgba(216,220,228,.35); font-size: .58rem; font-weight: 600; letter-spacing: .18em; }
+.site-footer button { display: inline-flex; align-items: center; gap: .5rem; border: 0; background: none; color: rgba(221,225,232,.48); cursor: pointer; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; }
+.site-footer button svg { color: rgba(190,215,243,.7); }
+
+@media (max-width: 479px) {
+  .site-footer { flex-direction: column; align-items: flex-start; }
+}

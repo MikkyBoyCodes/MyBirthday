@@ -1,0 +1,1054 @@
+/* =========================================================
+   MICHAEL'S BIRTHDAY WEBSITE
+   MOBILE + TABLET LAYOUT
+   File: src/styles/mobile-responsive.css
+
+   Purpose:
+   - Redesign the layout for phones instead of shrinking desktop.
+   - Keep all existing sections and features available.
+   - Protect portrait photographs, headings, cake and music controls.
+   - Support narrow phones, larger phones and tablets.
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   1. GLOBAL MOBILE SAFEGUARDS
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  html {
+    scroll-padding-top: 6.5rem;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .site-shell,
+  main,
+  .story-section,
+  .section-anchor {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .story-section {
+    min-height: auto;
+    padding: 7rem 1rem 5rem;
+    overflow: clip;
+  }
+
+  .section-anchor {
+    scroll-margin-top: 6.4rem;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   2. MOBILE NAVIGATION
+   Two rows: date + wish button, then section links.
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .site-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 0.4rem 0.65rem;
+    min-height: 0;
+    padding: 0.55rem 0.75rem 0.5rem;
+    padding-top: max(0.55rem, env(safe-area-inset-top));
+  }
+
+  .nav-mark {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    min-height: 1.8rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+  }
+
+  .nav-mark span {
+    display: inline;
+  }
+
+  .nav-wish {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 1.8rem;
+    padding: 0.25rem 0.1rem;
+    font-size: 0.65rem;
+    white-space: nowrap;
+  }
+
+  .nav-wish span {
+    font-size: 0.8rem;
+  }
+
+  .nav-links {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.12rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0.2rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+    justify-content: center;
+    min-height: 2rem;
+    padding: 0.45rem clamp(0.3rem, 1.5vw, 0.6rem);
+    font-size: clamp(0.52rem, 1.8vw, 0.65rem);
+    letter-spacing: 0.055em;
+    white-space: nowrap;
+  }
+
+  .nav-link::after {
+    bottom: 0.12rem;
+  }
+
+  .section-anchor {
+    scroll-margin-top: 6.4rem;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   3. HERO
+   Keep the birthday message, name and supporting text readable.
+   Let the hero grow vertically on short or narrow screens.
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .hero-section {
+    min-height: 100svh;
+    padding: 8rem 0.9rem 5.5rem;
+    padding-top: max(7.8rem, calc(env(safe-area-inset-top) + 7rem));
+    padding-bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4rem));
+  }
+
+  .hero-content {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero-atmosphere {
+    inset: 20% 4% 18%;
+  }
+
+  .hero-orb {
+    max-width: 75vw;
+    max-height: 75vw;
+  }
+
+  .hero-date {
+    gap: 0.35rem;
+    font-size: clamp(0.52rem, 2.3vw, 0.65rem);
+    letter-spacing: 0.12em;
+  }
+
+  .birthday-intro {
+    gap: 0.18em;
+    margin-top: 1.6rem;
+    width: 100%;
+  }
+
+  .hero-word--happy {
+    font-size: clamp(1.7rem, 8.5vw, 3rem);
+    letter-spacing: -0.035em;
+  }
+
+  .hero-word--birthday {
+    font-size: clamp(2.35rem, 12.2vw, 4.8rem);
+    letter-spacing: -0.055em;
+  }
+
+  .hero-word--to-me {
+    font-size: clamp(1.9rem, 9.4vw, 3.5rem);
+    letter-spacing: -0.04em;
+  }
+
+  .hero-identity {
+    margin-top: clamp(2rem, 7vw, 3rem);
+  }
+
+  .hero-name {
+    justify-content: center;
+    gap: 0;
+    max-width: 100%;
+    font-size: clamp(2.7rem, 15.5vw, 5.6rem);
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    white-space: nowrap;
+  }
+
+  .hero-subtitle {
+    margin-top: 0.9rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.27em;
+  }
+
+  .hero-line-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem;
+    max-width: 100%;
+    margin-top: 1.3rem;
+  }
+
+  .hero-line-wrap p {
+    font-size: clamp(0.65rem, 2.8vw, 0.76rem);
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .hero-rule {
+    width: 1.5rem;
+    flex: 0 0 auto;
+  }
+
+  .hero-scroll {
+    bottom: max(1.2rem, env(safe-area-inset-bottom));
+    font-size: 0.53rem;
+    letter-spacing: 0.13em;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   4. GRADUATION / CHAPTER
+   Text first, graduation card underneath.
+   Keep the photo and code lines within the card.
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .chapter-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 2rem;
+  }
+
+  .section-intro {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .chapter-title {
+    margin-top: 1rem;
+    font-size: clamp(2.9rem, 13vw, 5rem);
+    line-height: 0.98;
+    overflow-wrap: normal;
+  }
+
+  .chapter-note {
+    max-width: 34rem;
+    margin-top: 1.1rem;
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .chapter-card {
+    width: 100%;
+    min-width: 0;
+    padding: clamp(1rem, 4vw, 1.5rem);
+    border-radius: 1.1rem;
+  }
+
+  .chapter-arrow {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .chapter-kicker {
+    margin-top: 1.5rem;
+    font-size: 0.58rem;
+    line-height: 1.6;
+    letter-spacing: 0.12em;
+  }
+
+  .chapter-statement {
+    margin-bottom: 1.35rem;
+    font-size: clamp(1.35rem, 5.8vw, 2rem);
+    line-height: 1.15;
+  }
+
+  .graduation-photo {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    margin-bottom: 1.1rem;
+  }
+
+  .graduation-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 55%;
+  }
+
+  .graduation-placeholder {
+    padding: 0.75rem;
+  }
+
+  .graduation-placeholder span,
+  .graduation-placeholder small {
+    max-width: 100%;
+    font-size: 0.52rem;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+
+  .chapter-code-stack {
+    min-width: 0;
+    min-height: 4.6rem;
+    overflow: hidden;
+  }
+
+  .chapter-code {
+    display: grid;
+    grid-template-columns: minmax(0, auto) auto minmax(0, 1fr);
+    gap: 0.28rem;
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(0.47rem, 2.15vw, 0.62rem);
+    overflow-wrap: anywhere;
+  }
+
+  .chapter-code span,
+  .chapter-code em {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   5. ME / TODDLER AND CURRENT PHOTOS
+   Portrait cards become a staggered vertical composition.
+   Images keep their proportions; faces are not stretched.
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .me-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 2rem;
+  }
+
+  .me-copy,
+  .me-memories {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .me-section h2 {
+    margin: 1rem 0 1.1rem;
+    font-size: clamp(2.9rem, 12.5vw, 4.8rem);
+    line-height: 0.98;
+  }
+
+  .me-note {
+    max-width: 34rem;
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .me-photo-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 1.2rem;
+    width: 100%;
+  }
+
+  .me-photo-pair .memory-frame {
+    width: 86%;
+    min-width: 0;
+  }
+
+  .me-photo-pair .memory-frame--toddler {
+    justify-self: start;
+    transform: translateY(1rem) rotate(-2deg) scale(0.98);
+  }
+
+  .me-photo-pair .memory-frame--now {
+    justify-self: end;
+    transform: translateY(1rem) rotate(2deg) scale(0.98);
+  }
+
+  .me-photo-pair.is-visible .memory-frame--toddler {
+    transform: translateY(0) rotate(-1.2deg);
+  }
+
+  .me-photo-pair.is-visible .memory-frame--now {
+    transform: translateY(0) rotate(1deg);
+  }
+
+  .memory-frame {
+    min-width: 0;
+  }
+
+  .memory-image-wrap {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 1rem;
+  }
+
+  .memory-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .memory-frame--toddler .memory-image {
+    object-position: center center;
+  }
+
+  .memory-frame--now .memory-image {
+    object-position: center 38%;
+  }
+
+  .memory-frame figcaption {
+    margin-top: 0.55rem;
+    font-size: 0.54rem;
+    letter-spacing: 0.13em;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   6. MY PEOPLE / FAMILY
+   Parents get a large full-width card.
+   Brothers sit side by side when there is enough room.
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .people-block {
+    width: 100%;
+    min-width: 0;
+    padding-top: 3.5rem;
+    margin-top: 1.2rem;
+  }
+
+  .people-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .people-heading h3 {
+    margin: 0;
+    font-size: clamp(2rem, 8.5vw, 3.2rem);
+    line-height: 1.02;
+  }
+
+  .people-heading > p:last-child {
+    max-width: 36rem;
+    margin: 0;
+    font-size: 0.83rem;
+    line-height: 1.7;
+  }
+
+  .family-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 0.7rem;
+    width: 100%;
+  }
+
+  .family-card {
+    min-width: 0;
+    padding: 0.65rem;
+    border-radius: 0.95rem;
+  }
+
+  .family-card--parents {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .family-card .memory-image-wrap {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    min-height: 0;
+    border-radius: 0.7rem;
+  }
+
+  .family-card--parents .memory-image-wrap {
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+  }
+
+  .family-card--parents .memory-image {
+    object-position: center bottom;
+  }
+
+  .family-copy {
+    min-width: 0;
+    padding: 0.3rem 0.15rem 0.35rem;
+  }
+
+  .family-role {
+    font-size: 0.49rem;
+    letter-spacing: 0.12em;
+    line-height: 1.5;
+  }
+
+  .family-copy h4 {
+    margin: 0.45rem 0;
+    font-size: clamp(1.15rem, 5vw, 1.7rem);
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+  }
+
+  .family-copy p {
+    font-size: 0.73rem;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   7. BIRTHDAY WISH SECTION AND CAKE
+   Center the cake and scale its actual tiers to the available
+   width, instead of allowing the artwork to spill off-screen.
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .wish-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 1.4rem;
+  }
+
+  .wish-heading {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .wish-heading h2 {
+    margin: 1rem 0 0.8rem;
+    font-size: clamp(3.2rem, 16vw, 5.5rem);
+    line-height: 0.9;
+    overflow-wrap: normal;
+  }
+
+  .wish-helper {
+    align-items: flex-start;
+    max-width: 100%;
+    font-size: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .wish-section > div:last-child {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .cake-experience {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0.25rem 0 1rem;
+    overflow: visible;
+  }
+
+  .cake-stage {
+    width: 100%;
+    max-width: 100%;
+    height: clamp(17rem, 70vw, 21rem);
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .cake-assembly {
+    width: min(16rem, 80vw);
+    max-width: 100%;
+    padding-bottom: 0.8rem;
+  }
+
+  .cake-plinth {
+    width: 112.5%;
+    margin-left: -6.25%;
+  }
+
+  .cake-tier--bottom {
+    width: 93.75%;
+  }
+
+  .cake-tier--top {
+    width: 73.75%;
+  }
+
+  .cake-candle-row {
+    top: -4.4rem;
+    width: 66.875%;
+  }
+
+  .smoke-layer {
+    width: 66.875%;
+  }
+
+  .cake-glow {
+    width: min(19rem, 95vw);
+    max-width: 100%;
+  }
+
+  .cake-impact {
+    width: min(13rem, 80vw);
+    max-width: 100%;
+  }
+
+  .cake-controls {
+    width: 100%;
+    min-height: 5.5rem;
+    padding: 0.4rem 0.25rem 0;
+    gap: 0.8rem;
+    text-align: center;
+  }
+
+  .cake-awaiting,
+  .make-wish-prompt {
+    max-width: 100%;
+    font-size: clamp(0.53rem, 2.5vw, 0.62rem);
+    line-height: 1.6;
+    letter-spacing: 0.12em;
+    text-align: center;
+  }
+
+  .blow-button {
+    min-height: 2.8rem;
+    max-width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+  }
+
+  .wish-made span {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   8. MUSIC PLAYER AND PLAYLIST
+   Keep the controls compact and the open playlist scrollable.
+   Do not let the playlist extend beyond the phone screen.
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .sound-dock {
+    position: fixed;
+    right: max(0.5rem, env(safe-area-inset-right));
+    bottom: max(0.5rem, env(safe-area-inset-bottom));
+    z-index: 80;
+    width: calc(100vw - 1rem);
+    max-width: 24rem;
+  }
+
+  .sound-control {
+    display: grid;
+    grid-template-columns: 1.8rem 1.8rem minmax(0, 1fr) 1.8rem 1.8rem;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 3.2rem;
+    padding: 0.35rem 0.4rem;
+    border-radius: 1rem;
+  }
+
+  .music-disc {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  .music-disc svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  .track-toggle,
+  .next-track,
+  .sound-panel-toggle {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  .track-info {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .track-label {
+    font-size: 0.65rem;
+  }
+
+  .track-meta {
+    font-size: 0.46rem;
+    letter-spacing: 0.11em;
+  }
+
+  .music-visualizer {
+    display: none;
+  }
+
+  .sound-panel-toggle {
+    display: grid;
+  }
+
+  .music-panel {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 0.55rem);
+    width: 100%;
+    max-width: 100%;
+    max-height: min(54svh, 27rem);
+    padding: 0.8rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 1rem;
+    scrollbar-width: thin;
+  }
+
+  .music-panel-head {
+    gap: 0.6rem;
+    padding-bottom: 0.65rem;
+  }
+
+  .music-panel-head strong {
+    max-width: 100%;
+    font-size: 0.68rem;
+  }
+
+  .track-list {
+    gap: 0.2rem;
+  }
+
+  .track-item {
+    grid-template-columns: 1.6rem minmax(0, 1fr) auto;
+    gap: 0.45rem;
+    min-height: 2.8rem;
+    padding: 0.6rem 0.4rem;
+  }
+
+  .track-title {
+    font-size: 0.68rem;
+  }
+
+  .track-file {
+    font-size: 0.5rem;
+  }
+
+  .track-state {
+    font-size: 0.43rem;
+    letter-spacing: 0.07em;
+  }
+
+  .music-hint,
+  .music-error {
+    font-size: 0.58rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   9. FOOTER
+   Keep the date and return link comfortably separated.
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .site-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1.5rem 1rem;
+    padding-bottom: max(5.5rem, calc(1.5rem + env(safe-area-inset-bottom)));
+  }
+
+  .site-footer p {
+    font-size: 0.55rem;
+  }
+
+  .site-footer button {
+    min-height: 2.5rem;
+    font-size: 0.6rem;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   10. EXTRA-WIDE PHONES AND SMALL TABLETS
+   Use a little more space without returning to the desktop grid.
+   --------------------------------------------------------- */
+
+@media (min-width: 520px) and (max-width: 767px) {
+  .story-section {
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .me-photo-pair .memory-frame {
+    width: 78%;
+  }
+
+  .family-grid {
+    gap: 0.9rem;
+  }
+
+  .family-card {
+    padding: 0.85rem;
+  }
+
+  .cake-assembly {
+    width: min(16rem, 70vw);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   11. VERY NARROW PHONES
+   320–359px: prioritize readable text and usable controls.
+   --------------------------------------------------------- */
+
+@media (max-width: 359px) {
+  .story-section {
+    padding-right: 0.8rem;
+    padding-left: 0.8rem;
+  }
+
+  .site-nav {
+    padding-right: 0.55rem;
+    padding-left: 0.55rem;
+  }
+
+  .nav-links {
+    gap: 0;
+  }
+
+  .nav-link {
+    padding-right: 0.28rem;
+    padding-left: 0.28rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.025em;
+  }
+
+  .nav-wish {
+    font-size: 0.59rem;
+  }
+
+  .hero-word--birthday {
+    font-size: clamp(2.2rem, 11.7vw, 2.7rem);
+  }
+
+  .hero-name {
+    font-size: clamp(2.55rem, 14.8vw, 3.05rem);
+  }
+
+  .chapter-card {
+    padding: 0.9rem;
+  }
+
+  .chapter-code {
+    gap: 0.2rem;
+    font-size: 0.46rem;
+  }
+
+  .me-photo-pair .memory-frame {
+    width: 91%;
+  }
+
+  .family-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .family-card--parents {
+    grid-column: auto;
+  }
+
+  .family-card:not(.family-card--parents) .memory-image-wrap {
+    aspect-ratio: 5 / 4;
+  }
+
+  .cake-stage {
+    height: 17rem;
+  }
+
+  .cake-assembly {
+    width: min(15rem, 80vw);
+  }
+
+  .sound-dock {
+    width: calc(100vw - 0.8rem);
+    right: 0.4rem;
+  }
+
+  .sound-control {
+    grid-template-columns: 1.6rem 1.65rem minmax(0, 1fr) 1.65rem 1.65rem;
+    gap: 0.15rem;
+    padding-right: 0.3rem;
+    padding-left: 0.3rem;
+  }
+
+  .music-disc,
+  .track-toggle,
+  .next-track,
+  .sound-panel-toggle {
+    width: 1.65rem;
+    height: 1.65rem;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   12. SHORT LANDSCAPE PHONES
+   Do not force every section to fill the screen height.
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .hero-section {
+    min-height: 100svh;
+    padding-top: 6.5rem;
+    padding-bottom: 4rem;
+  }
+
+  .birthday-intro {
+    margin-top: 0.8rem;
+  }
+
+  .hero-identity {
+    margin-top: 1.2rem;
+  }
+
+  .hero-name {
+    font-size: clamp(2.7rem, 8vw, 4.4rem);
+  }
+
+  .hero-line-wrap {
+    margin-top: 0.7rem;
+  }
+
+  .cake-stage {
+    height: 16rem;
+  }
+
+  .music-panel {
+    max-height: 65svh;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   13. TABLETS
+   Use more horizontal space while keeping mobile-first cards.
+   --------------------------------------------------------- */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .story-section {
+    padding: 7.5rem 2rem 5.5rem;
+  }
+
+  .chapter-section,
+  .me-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  .section-intro,
+  .me-copy {
+    max-width: 44rem;
+  }
+
+  .chapter-card {
+    width: 100%;
+  }
+
+  .me-photo-pair {
+    width: min(100%, 42rem);
+    margin-inline: auto;
+  }
+
+  .people-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .family-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .family-card--parents {
+    grid-column: 1 / -1;
+  }
+
+  .wish-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  .cake-experience {
+    width: 100%;
+  }
+
+  .cake-stage {
+    width: min(100%, 34rem);
+    margin-inline: auto;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   14. REDUCED-MOTION ACCESSIBILITY
+   Respect the device preference without hiding content.
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .me-photo-pair[data-reveal] .memory-frame,
+  .me-photo-pair[data-reveal].is-visible .memory-frame {
+    transition-duration: 0.01ms;
+    transition-delay: 0ms;
+  }
+}

@@ -1,0 +1,32 @@
+:root {
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+}
+
+.hero-name,
+.hero-word,
+.chapter-title,
+.me-section h2,
+.wish-heading h2,
+.people-heading h3,
+.family-copy h4,
+.wish-made span {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+}
+
+.hero-name {
+  font-weight: 400;
+}
+
+.hero-word {
+  font-weight: 400;
+}
+
+.chapter-title,
+.me-section h2,
+.wish-heading h2,
+.people-heading h3,
+.family-copy h4 {
+  font-weight: 400;
+}

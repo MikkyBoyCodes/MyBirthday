@@ -1,0 +1,10 @@
+.wish-section { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); align-items: center; gap: clamp(2rem, 6vw, 7rem); border-top: 1px solid rgba(255,255,255,.05); overflow: hidden; }
+.wish-heading h2 { margin: 1.2rem 0 .8rem; font-size: clamp(4rem, 9vw, 9.5rem); line-height: .84; color: #f2f1ed; }
+.wish-heading h2 span { color: rgba(190,215,243,.82); }
+.wish-helper { display: inline-flex; align-items: center; gap: .5rem; margin: 0; color: rgba(219,223,230,.48); font-size: .78rem; line-height: 1.5; }
+.wish-helper svg { color: rgba(189,216,243,.75); }
+
+@media (max-width: 767px) {
+  .wish-section { grid-template-columns: 1fr; gap: 2.6rem; }
+  .wish-heading h2 { font-size: clamp(3.8rem, 19vw, 6.5rem); }
+}

@@ -1,0 +1,205 @@
+.chapter-section {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(3rem, 7vw, 8rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-intro {
+  max-width: 34rem;
+}
+
+.chapter-title {
+  margin: 1.2rem 0 0;
+  font-size: clamp(3.7rem, 6.7vw, 7.2rem);
+  line-height: 0.94;
+  color: #f0efec;
+}
+
+.chapter-note {
+  max-width: 27rem;
+  margin: 1.5rem 0 0;
+  color: rgba(219, 223, 231, 0.48);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.chapter-card {
+  position: relative;
+  padding: clamp(1.6rem, 3vw, 3rem);
+  border: 1px solid rgba(214, 225, 240, 0.11);
+  border-radius: 1.4rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.chapter-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  color: rgba(203, 221, 245, 0.9);
+  background: rgba(161, 189, 223, 0.08);
+}
+
+.chapter-kicker {
+  margin: 2rem 0 0;
+  color: rgba(215, 221, 230, 0.5);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.chapter-statement {
+  margin: 0.8rem 0 2rem;
+  max-width: 34rem;
+  color: rgba(242, 241, 237, 0.88);
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 3vw, 2.55rem);
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+}
+
+.graduation-photo {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 0 1.5rem;
+  aspect-ratio: 1 / 1;
+  border: 1px solid rgba(214, 225, 240, 0.1);
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.graduation-photo.is-empty img {
+  display: none;
+}
+
+.graduation-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+  filter: saturate(0.88);
+}
+
+.graduation-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.45rem;
+  color: rgba(207, 220, 237, 0.45);
+  text-align: center;
+}
+
+.graduation-placeholder span {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.17em;
+}
+
+.graduation-placeholder small {
+  color: rgba(219, 223, 231, 0.32);
+  font-size: 0.58rem;
+}
+
+.graduation-photo:not(.is-empty) .graduation-placeholder {
+  display: none;
+}
+
+.chapter-code-stack {
+  min-height: 5.2rem;
+}
+
+.chapter-code {
+  display: grid;
+  grid-template-columns: max-content max-content max-content;
+  gap: 0.42rem;
+  align-items: center;
+  width: max-content;
+  margin-top: 0.62rem;
+  color: rgba(222, 228, 237, 0.52);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  opacity: 0;
+  clip-path: inset(0 100% 0 0);
+}
+
+.chapter-code-stack.is-active .chapter-code {
+  animation: codeLineWrite 0.72s steps(26, end) both;
+}
+
+.chapter-code-stack.is-active .chapter-code--1 { animation-delay: 0s; }
+.chapter-code-stack.is-active .chapter-code--2 { animation-delay: 0.95s; }
+.chapter-code-stack.is-active .chapter-code--3 { animation-delay: 1.9s; }
+
+.chapter-code strong {
+  color: rgba(196, 213, 236, 0.4);
+  font-weight: 400;
+}
+
+.chapter-code em {
+  color: rgba(186, 213, 243, 0.82);
+  font-style: normal;
+}
+
+.chapter-arrow {
+  position: absolute;
+  right: 1.6rem;
+  top: 1.6rem;
+  color: rgba(186, 213, 243, 0.7);
+}
+
+@keyframes codeLineWrite {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (max-width: 767px) {
+  .chapter-section {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .chapter-title {
+    font-size: clamp(3.15rem, 15vw, 5.6rem);
+  }
+
+  .chapter-card {
+    border-radius: 1.15rem;
+  }
+
+  .graduation-photo {
+    aspect-ratio: 1 / 1;
+  }
+
+  .chapter-code {
+    width: 100%;
+    grid-template-columns: max-content max-content max-content;
+    font-size: 0.62rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-code-stack.is-active .chapter-code {
+    animation: none;
+    opacity: 1;
+    clip-path: none;
+  }
+}
