@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { PLAYLIST } from '../data/playlist'
 
-const AUTOPLAY_DELAY = 4200
 const VOLUME_KEY = 'birthday-music-volume'
 const DEFAULT_VOLUME = 0.8
 
@@ -14,16 +13,41 @@ function readSavedVolume() {
   }
 }
 
+const INTERACTION_EVENTS = ['pointerdown', 'touchend', 'keydown']
+
 export default function useAudio() {
   const audioRef = useRef(null)
   const currentTrackRef = useRef(0)
-  const autoplayTimerRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTrack, setCurrentTrack] = useState(0)
   const [error, setError] = useState('')
   const [volume, setVolumeState] = useState(readSavedVolume)
   const [muted, setMuted] = useState(false)
+
+  const volumeRef = useRef(volume)
+  const mutedRef = useRef(false)
   const unlockRef = useRef(null)
+  const graphRetryRef = useRef(null)
+  const ctxRef = useRef(null)
+  const graphRef = useRef(null)
+  const graphFailedRef = useRef(false)
+  const analyserRef = useRef(null)
+
+  // Volume: through the Web Audio gain node when it is available (this is the only
+  // way volume works on iPhone), otherwise through the normal audio element volume.
+  const applyVolume = useCallback(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    const graph = graphRef.current
+    if (graph) {
+      graph.gain.gain.value = mutedRef.current ? 0 : volumeRef.current
+      audio.volume = 1
+      audio.muted = false
+    } else {
+      audio.volume = volumeRef.current
+      audio.muted = mutedRef.current
+    }
+  }, [])
 
   const disarmUnlock = useCallback(() => {
     if (unlockRef.current) {
@@ -32,11 +56,90 @@ export default function useAudio() {
     }
   }, [])
 
+  const disarmGraphRetry = useCallback(() => {
+    if (graphRetryRef.current) {
+      graphRetryRef.current()
+      graphRetryRef.current = null
+    }
+  }, [])
+
+  // Connects the audio to an analyser so the player's bars can follow the real music.
+  // The audio is only re-routed once the audio engine is confirmed running,
+  // so a blocked engine can never silence the music.
+  const setupGraph = useCallback(async () => {
+    const audio = audioRef.current
+    if (!audio || graphRef.current || graphFailedRef.current) return
+
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext
+    if (!AudioContextClass) return
+
+    try {
+      if (navigator.audioSession) navigator.audioSession.type = 'playback'
+    } catch {
+      // Not supported on this browser.
+    }
+
+    let ctx = ctxRef.current
+    if (!ctx) {
+      try {
+        ctx = new AudioContextClass()
+      } catch {
+        graphFailedRef.current = true
+        return
+      }
+      ctxRef.current = ctx
+      ctx.onstatechange = () => {
+        const current = audioRef.current
+        if (ctx.state !== 'running' && current && !current.paused) {
+          ctx.resume().catch(() => {})
+        }
+      }
+    }
+
+    try {
+      await ctx.resume()
+    } catch {
+      // Handled by the state check below.
+    }
+
+    if (audioRef.current !== audio || graphRef.current) return
+
+    if (ctx.state !== 'running') {
+      // Not allowed yet: try again on the visitor's next tap, click or key press.
+      if (!graphRetryRef.current) {
+        const retry = () => {
+          disarmGraphRetry()
+          setupGraph()
+        }
+        INTERACTION_EVENTS.forEach((name) => window.addEventListener(name, retry, true))
+        graphRetryRef.current = () => INTERACTION_EVENTS.forEach((name) => window.removeEventListener(name, retry, true))
+      }
+      return
+    }
+
+    try {
+      const source = ctx.createMediaElementSource(audio)
+      const gain = ctx.createGain()
+      const analyser = ctx.createAnalyser()
+      analyser.fftSize = 256
+      analyser.smoothingTimeConstant = 0.55
+      analyser.minDecibels = -110
+      analyser.maxDecibels = -10
+      source.connect(gain)
+      gain.connect(analyser)
+      analyser.connect(ctx.destination)
+      graphRef.current = { source, gain, analyser }
+      analyserRef.current = analyser
+      applyVolume()
+    } catch {
+      graphFailedRef.current = true
+    }
+  }, [applyVolume, disarmGraphRetry])
+
   // Browsers block sound until the visitor interacts with the page.
   // If the automatic start is blocked, start on the first tap, click or key press instead.
   const armUnlock = useCallback(() => {
     if (unlockRef.current) return
-    const events = ['pointerdown', 'touchend', 'keydown']
 
     const handler = (event) => {
       if (event.target instanceof Element && event.target.closest('.sound-dock')) {
@@ -55,8 +158,8 @@ export default function useAudio() {
       }).catch(() => {})
     }
 
-    events.forEach((name) => window.addEventListener(name, handler, true))
-    unlockRef.current = () => events.forEach((name) => window.removeEventListener(name, handler, true))
+    INTERACTION_EVENTS.forEach((name) => window.addEventListener(name, handler, true))
+    unlockRef.current = () => INTERACTION_EVENTS.forEach((name) => window.removeEventListener(name, handler, true))
   }, [disarmUnlock])
 
   const loadTrack = useCallback((index, autoplay = false) => {
@@ -75,7 +178,8 @@ export default function useAudio() {
       audio.play().then(() => {
         setIsPlaying(true)
         setError('')
-      }).catch(() => {
+      }).catch((reason) => {
+        if (audioRef.current !== audio || reason?.name === 'AbortError') return
         setIsPlaying(false)
         setError('Tap or click anywhere to start the music.')
         armUnlock()
@@ -85,8 +189,11 @@ export default function useAudio() {
 
   useEffect(() => {
     const audio = new Audio()
-    audio.preload = 'metadata'
+    audio.preload = 'auto'
     audioRef.current = audio
+    graphRef.current = null
+    analyserRef.current = null
+    applyVolume()
 
     const onEnded = () => {
       const next = (currentTrackRef.current + 1) % PLAYLIST.length
@@ -97,40 +204,62 @@ export default function useAudio() {
       setIsPlaying(true)
       disarmUnlock()
     }
+    const onPlaying = () => setupGraph()
     const onPause = () => setIsPlaying(false)
     const onError = () => {
       setIsPlaying(false)
-      setError('This track is not available yet. Add the MP3 to public/music/.')
+      setError('This track is not available yet.')
+    }
+
+    const onVisible = () => {
+      const ctx = ctxRef.current
+      if (!document.hidden && ctx && ctx.state !== 'running' && !audio.paused) {
+        ctx.resume().catch(() => {})
+      }
     }
 
     audio.addEventListener('ended', onEnded)
     audio.addEventListener('play', onPlay)
+    audio.addEventListener('playing', onPlaying)
     audio.addEventListener('pause', onPause)
     audio.addEventListener('error', onError)
-    loadTrack(0)
+    document.addEventListener('visibilitychange', onVisible)
 
-    autoplayTimerRef.current = window.setTimeout(() => {
-      loadTrack(0, true)
-    }, AUTOPLAY_DELAY)
+    // Start the first song right away; if the browser blocks it,
+    // the first tap, click or key press starts it instead.
+    loadTrack(0, true)
 
     return () => {
-      window.clearTimeout(autoplayTimerRef.current)
       disarmUnlock()
+      disarmGraphRetry()
+      document.removeEventListener('visibilitychange', onVisible)
       audio.removeEventListener('ended', onEnded)
       audio.removeEventListener('play', onPlay)
+      audio.removeEventListener('playing', onPlaying)
       audio.removeEventListener('pause', onPause)
       audio.removeEventListener('error', onError)
       audio.pause()
       audio.src = ''
+      if (graphRef.current) {
+        try {
+          graphRef.current.source.disconnect()
+          graphRef.current.gain.disconnect()
+          graphRef.current.analyser.disconnect()
+        } catch {
+          // Already disconnected.
+        }
+      }
+      graphRef.current = null
+      analyserRef.current = null
       audioRef.current = null
     }
-  }, [loadTrack, disarmUnlock])
+  }, [loadTrack, disarmUnlock, disarmGraphRetry, setupGraph, applyVolume])
 
   useEffect(() => {
-    if (!audioRef.current) return
-    audioRef.current.volume = volume
-    audioRef.current.muted = muted
-  }, [volume, muted])
+    volumeRef.current = volume
+    mutedRef.current = muted
+    applyVolume()
+  }, [volume, muted, applyVolume])
 
   const toggle = async () => {
     const audio = audioRef.current
@@ -143,7 +272,7 @@ export default function useAudio() {
         setError('')
       } catch {
         setIsPlaying(false)
-        setError('Add the music files to public/music/ or choose another track.')
+        setError('This track could not be played. Try another one.')
       }
     } else {
       audio.pause()
@@ -187,5 +316,6 @@ export default function useAudio() {
     muted,
     setVolume,
     toggleMute,
+    analyserRef,
   }
 }

@@ -123,9 +123,10 @@
   align-items: center;
   width: max-content;
   margin-top: 0.62rem;
-  color: rgba(222, 228, 237, 0.52);
+  color: rgba(226, 232, 241, 0.8);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.68rem;
+  font-size: 0.74rem;
+  font-weight: 500;
   opacity: 0;
   clip-path: inset(0 100% 0 0);
 }
@@ -139,13 +140,15 @@
 .chapter-code-stack.is-active .chapter-code--3 { animation-delay: 1.9s; }
 
 .chapter-code strong {
-  color: rgba(196, 213, 236, 0.4);
-  font-weight: 400;
+  color: rgba(196, 213, 236, 0.62);
+  font-weight: 500;
 }
 
 .chapter-code em {
-  color: rgba(186, 213, 243, 0.82);
+  color: rgba(200, 225, 252, 0.98);
   font-style: normal;
+  font-weight: 600;
+  text-shadow: 0 0 14px rgba(150, 195, 245, 0.35);
 }
 
 .chapter-arrow {

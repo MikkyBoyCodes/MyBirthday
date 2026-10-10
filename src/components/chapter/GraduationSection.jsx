@@ -10,12 +10,15 @@ const codeLines = [
 
 export default function GraduationSection() {
   const sectionRef = useRef(null)
+  const stackRef = useRef(null)
   const [isFocused, setIsFocused] = useState(false)
   const [run, setRun] = useState(0)
 
   useEffect(() => {
-    const section = sectionRef.current
-    if (!section) return
+    // Watch the status block itself (not the whole tall section),
+    // so the animation reliably starts when the block is actually on screen.
+    const stack = stackRef.current
+    if (!stack) return
 
     let focusTimer
     const observer = new IntersectionObserver(
@@ -26,18 +29,18 @@ export default function GraduationSection() {
           focusTimer = window.setTimeout(() => {
             setRun((value) => value + 1)
             setIsFocused(true)
-          }, 450)
+          }, 300)
         } else {
           setIsFocused(false)
         }
       },
       {
-        threshold: 0.58,
-        rootMargin: '-12% 0px -22% 0px',
+        threshold: 0.75,
+        rootMargin: '-14% 0px -16% 0px',
       },
     )
 
-    observer.observe(section)
+    observer.observe(stack)
 
     return () => {
       window.clearTimeout(focusTimer)
@@ -73,7 +76,7 @@ export default function GraduationSection() {
             </div>
           </div>
 
-          <div className={`chapter-code-stack ${isFocused ? 'is-active' : ''}`} aria-label="Chapter status">
+          <div ref={stackRef} className={`chapter-code-stack ${isFocused ? 'is-active' : ''}`} aria-label="Chapter status">
             {codeLines.map(([name, operator, value], lineIndex) => (
               <div className={`chapter-code chapter-code--${lineIndex + 1}`} key={`${run}-${name}`}>
                 <span>{name}</span>

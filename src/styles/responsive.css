@@ -342,7 +342,7 @@
     gap: 0.28rem;
     width: 100%;
     max-width: 100%;
-    font-size: clamp(0.47rem, 2.15vw, 0.62rem);
+    font-size: clamp(0.55rem, 2.6vw, 0.7rem);
     overflow-wrap: anywhere;
   }
 
@@ -488,9 +488,9 @@
 
   .family-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     align-items: stretch;
-    gap: 0.7rem;
+    gap: 0.9rem;
     width: 100%;
   }
 
@@ -509,7 +509,7 @@
 
   .family-card .memory-image-wrap {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 1 / 1;
     min-height: 0;
     border-radius: 0.7rem;
   }
@@ -689,7 +689,7 @@
 
   .sound-control {
     display: grid;
-    grid-template-columns: 1.8rem 1.8rem minmax(0, 1fr) 1.8rem 1.8rem;
+    grid-template-columns: 1.8rem 1.8rem minmax(0, 1fr) 1.7rem 1.8rem 1.8rem;
     align-items: center;
     gap: 0.25rem;
     min-height: 3.2rem;
@@ -729,7 +729,8 @@
   }
 
   .music-visualizer {
-    display: none;
+    display: inline-flex;
+    width: 1.7rem;
   }
 
   .sound-panel-toggle {
@@ -742,8 +743,8 @@
     bottom: calc(100% + 0.55rem);
     width: 100%;
     max-width: 100%;
-    max-height: min(54svh, 27rem);
-    padding: 0.8rem;
+    max-height: min(42svh, 20rem);
+    padding: 0.65rem;
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -753,7 +754,7 @@
 
   .music-panel-head {
     gap: 0.6rem;
-    padding-bottom: 0.65rem;
+    padding-bottom: 0.45rem;
   }
 
   .music-panel-head strong {
@@ -768,12 +769,17 @@
   .track-item {
     grid-template-columns: 1.6rem minmax(0, 1fr) auto;
     gap: 0.45rem;
-    min-height: 2.8rem;
-    padding: 0.6rem 0.4rem;
+    min-height: 2.3rem;
+    padding: 0.4rem 0.35rem;
   }
 
   .track-title {
     font-size: 0.68rem;
+  }
+
+  .volume-row {
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
   }
 
   .track-file {
@@ -894,7 +900,7 @@
 
   .chapter-code {
     gap: 0.2rem;
-    font-size: 0.46rem;
+    font-size: 0.52rem;
   }
 
   .me-photo-pair .memory-frame {
@@ -910,7 +916,7 @@
   }
 
   .family-card:not(.family-card--parents) .memory-image-wrap {
-    aspect-ratio: 5 / 4;
+    aspect-ratio: 1 / 1;
   }
 
   .cake-stage {
@@ -927,7 +933,7 @@
   }
 
   .sound-control {
-    grid-template-columns: 1.6rem 1.65rem minmax(0, 1fr) 1.65rem 1.65rem;
+    grid-template-columns: 1.6rem 1.65rem minmax(0, 1fr) 1.4rem 1.65rem 1.65rem;
     gap: 0.15rem;
     padding-right: 0.3rem;
     padding-left: 0.3rem;
@@ -1036,6 +1042,41 @@
   .cake-stage {
     width: min(100%, 34rem);
     margin-inline: auto;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   13b. THEN / NOW ON PHONES
+   Two straight, equal-width photos stacked one under the other.
+   Selectors match the desktop reveal rules so the tilt is removed.
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .me-photo-pair[data-reveal] {
+    gap: 1.6rem;
+  }
+
+  .me-photo-pair[data-reveal] .memory-frame {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .me-photo-pair[data-reveal] .memory-frame--toddler {
+    transform: translate(-1.4rem, 1.4rem) scale(0.97);
+  }
+
+  .me-photo-pair[data-reveal] .memory-frame--now {
+    transform: translate(1.4rem, 1.4rem) scale(0.97);
+  }
+
+  .me-photo-pair[data-reveal].is-visible .memory-frame--toddler,
+  .me-photo-pair[data-reveal].is-visible .memory-frame--now {
+    transform: none;
+  }
+
+  .me-photo-pair .memory-frame--toddler figcaption {
+    text-align: left;
   }
 }
 

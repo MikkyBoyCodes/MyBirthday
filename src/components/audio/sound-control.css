@@ -126,6 +126,21 @@
 .music-visualizer.is-active span:nth-child(3) { animation-delay: -0.45s; }
 .music-visualizer.is-active span:nth-child(4) { animation-delay: -0.12s; }
 .music-visualizer.is-active span:nth-child(5) { animation-delay: -0.32s; }
+.music-visualizer.is-active span:nth-child(6) { animation-delay: -0.5s; }
+.music-visualizer.is-active span:nth-child(7) { animation-delay: -0.08s; }
+
+/* When the real music signal is available, the bars follow the song itself. */
+.music-visualizer.is-live {
+  opacity: 0.95;
+}
+
+.music-visualizer.is-live span,
+.music-visualizer.is-active.is-live span {
+  height: 100%;
+  animation: none;
+  transform: scaleY(0.12);
+  will-change: transform;
+}
 
 .music-panel {
   position: absolute;
@@ -434,7 +449,7 @@
   }
 
   .sound-control {
-    grid-template-columns: 1.9rem 1.9rem minmax(0, 1fr) 2rem auto;
+    grid-template-columns: 1.9rem 1.9rem minmax(0, 1fr) 1.7rem 2rem auto;
   }
 
   .next-track {
@@ -442,13 +457,13 @@
   }
 
   .music-visualizer {
-    display: none;
+    width: 1.7rem;
   }
 }
 
 @media (max-width: 420px) {
   .sound-control {
-    grid-template-columns: 1.8rem 1.8rem minmax(0, 1fr) 1.8rem;
+    grid-template-columns: 1.8rem 1.8rem minmax(0, 1fr) 1.7rem 1.8rem;
   }
 
   .sound-panel-toggle {
