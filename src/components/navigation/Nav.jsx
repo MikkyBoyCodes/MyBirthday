@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import './Navbar.css'
+import './Nav.css'
 
 
 const links = [
