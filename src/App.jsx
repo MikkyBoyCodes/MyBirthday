@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import Navbar from './components/navigation/Navbar'
+import Navbar from "./components/navigation/Nav";
 import Hero from './components/hero/Hero'
 import GraduationSection from './components/chapter/GraduationSection'
 import PhotoSection from './components/profile/PhotoSection'
