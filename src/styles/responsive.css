@@ -24,6 +24,11 @@
     overflow-x: hidden;
   }
 
+  /* "clip" hides sideways overflow like "hidden" does, but lets sticky photos work. */
+  .site-shell {
+    overflow-x: clip;
+  }
+
   .site-shell,
   main,
   .story-section,
@@ -356,8 +361,8 @@
 
 /* ---------------------------------------------------------
    5. ME / TODDLER AND CURRENT PHOTOS
-   Portrait cards become a staggered vertical composition.
    Images keep their proportions; faces are not stretched.
+   The then/now photo change itself is in section 13b.
    --------------------------------------------------------- */
 
 @media (max-width: 767px) {
@@ -385,37 +390,6 @@
     max-width: 34rem;
     font-size: 0.88rem;
     line-height: 1.7;
-  }
-
-  .me-photo-pair {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
-    gap: 1.2rem;
-    width: 100%;
-  }
-
-  .me-photo-pair .memory-frame {
-    width: 86%;
-    min-width: 0;
-  }
-
-  .me-photo-pair .memory-frame--toddler {
-    justify-self: start;
-    transform: translateY(1rem) rotate(-2deg) scale(0.98);
-  }
-
-  .me-photo-pair .memory-frame--now {
-    justify-self: end;
-    transform: translateY(1rem) rotate(2deg) scale(0.98);
-  }
-
-  .me-photo-pair.is-visible .memory-frame--toddler {
-    transform: translateY(0) rotate(-1.2deg);
-  }
-
-  .me-photo-pair.is-visible .memory-frame--now {
-    transform: translateY(0) rotate(1deg);
   }
 
   .memory-frame {
@@ -673,8 +647,9 @@
 
 /* ---------------------------------------------------------
    8. MUSIC PLAYER AND PLAYLIST
-   Keep the controls compact and the open playlist scrollable.
-   Do not let the playlist extend beyond the phone screen.
+   Compact player bar. The playlist opens as a sheet above it with
+   big touch targets; only the song list scrolls, the header and
+   the volume stay in place. Tapping outside closes it.
    --------------------------------------------------------- */
 
 @media (max-width: 767px) {
@@ -684,12 +659,12 @@
     bottom: max(0.5rem, env(safe-area-inset-bottom));
     z-index: 80;
     width: calc(100vw - 1rem);
-    max-width: 24rem;
+    max-width: 26rem;
   }
 
   .sound-control {
     display: grid;
-    grid-template-columns: 1.8rem 1.8rem minmax(0, 1fr) 1.7rem 1.8rem 1.8rem;
+    grid-template-columns: 1.8rem 1.8rem minmax(0, 1fr) 3rem 1.8rem 1.8rem;
     align-items: center;
     gap: 0.25rem;
     min-height: 3.2rem;
@@ -710,6 +685,7 @@
   .track-toggle,
   .next-track,
   .sound-panel-toggle {
+    display: grid;
     width: 1.8rem;
     height: 1.8rem;
   }
@@ -728,13 +704,27 @@
     letter-spacing: 0.11em;
   }
 
-  .music-visualizer {
-    display: inline-flex;
-    width: 1.7rem;
+    .music-visualizer {
+    width: 3rem;
+    height: 1.4rem;
+    gap: 1.5px;
   }
 
-  .sound-panel-toggle {
-    display: grid;
+  .music-visualizer span {
+    width: 1.5px;
+  }
+
+  .music-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: rgba(0, 0, 0, 0.38);
+    -webkit-tap-highlight-color: transparent;
   }
 
   .music-panel {
@@ -743,57 +733,86 @@
     bottom: calc(100% + 0.55rem);
     width: 100%;
     max-width: 100%;
-    max-height: min(42svh, 20rem);
-    padding: 0.65rem;
-    overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    border-radius: 1rem;
-    scrollbar-width: thin;
+    max-height: min(54svh, 24rem);
+    padding: 0.75rem 0.7rem 0.6rem;
+    overflow: hidden;
+    border-radius: 1.15rem;
   }
 
   .music-panel-head {
     gap: 0.6rem;
-    padding-bottom: 0.45rem;
+    padding: 0.15rem 0.25rem 0.6rem;
   }
 
   .music-panel-head strong {
     max-width: 100%;
-    font-size: 0.68rem;
+    font-size: 0.74rem;
+  }
+
+  .playlist-close {
+    width: 2.4rem;
+    height: 2.4rem;
   }
 
   .track-list {
-    gap: 0.2rem;
+    gap: 0.15rem;
+    padding-right: 0.1rem;
+    -webkit-overflow-scrolling: touch;
   }
 
   .track-item {
-    grid-template-columns: 1.6rem minmax(0, 1fr) auto;
-    gap: 0.45rem;
-    min-height: 2.3rem;
-    padding: 0.4rem 0.35rem;
+    grid-template-columns: 1.7rem minmax(0, 1fr) auto;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.55rem 0.5rem;
+    border-radius: 0.8rem;
+  }
+
+  .track-number {
+    font-size: 0.6rem;
   }
 
   .track-title {
-    font-size: 0.68rem;
-  }
-
-  .volume-row {
-    margin-top: 0.4rem;
-    padding-top: 0.4rem;
-  }
-
-  .track-file {
-    font-size: 0.5rem;
+    font-size: 0.78rem;
   }
 
   .track-state {
-    font-size: 0.43rem;
-    letter-spacing: 0.07em;
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
   }
 
-  .music-hint,
+  .volume-row {
+    grid-template-columns: 2.4rem minmax(0, 1fr) 1.8rem;
+    margin-top: 0.4rem;
+    padding: 0.35rem 0.25rem 0 0;
+  }
+
+  .volume-toggle {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .volume-slider {
+    height: 2.2rem;
+  }
+
+  .volume-slider::-webkit-slider-thumb {
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-top: calc((1.05rem - 2px) / -2);
+  }
+
+  .volume-slider::-moz-range-thumb {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  .volume-value {
+    font-size: 0.62rem;
+  }
+
   .music-error {
-    font-size: 0.58rem;
+    font-size: 0.6rem;
     line-height: 1.55;
     overflow-wrap: anywhere;
   }
@@ -835,10 +854,6 @@
   .story-section {
     padding-right: 1.5rem;
     padding-left: 1.5rem;
-  }
-
-  .me-photo-pair .memory-frame {
-    width: 78%;
   }
 
   .family-grid {
@@ -903,10 +918,6 @@
     font-size: 0.52rem;
   }
 
-  .me-photo-pair .memory-frame {
-    width: 91%;
-  }
-
   .family-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -933,7 +944,7 @@
   }
 
   .sound-control {
-    grid-template-columns: 1.6rem 1.65rem minmax(0, 1fr) 1.4rem 1.65rem 1.65rem;
+    grid-template-columns: 1.6rem 1.65rem minmax(0, 1fr) 2.4rem 1.65rem 1.65rem;
     gap: 0.15rem;
     padding-right: 0.3rem;
     padding-left: 0.3rem;
@@ -945,6 +956,15 @@
   .sound-panel-toggle {
     width: 1.65rem;
     height: 1.65rem;
+  }
+
+    .music-visualizer {
+    width: 2.4rem;
+    gap: 1.1px;
+  }
+
+  .music-visualizer span {
+    width: 1.2px;
   }
 }
 
@@ -1048,35 +1068,141 @@
 
 /* ---------------------------------------------------------
    13b. THEN / NOW ON PHONES
-   Two straight, equal-width photos stacked one under the other.
-   Selectors match the desktop reveal rules so the tilt is removed.
+   One photo stays in view while the page is scrolled, and the toddler
+   photo gradually turns into today's photo. The number --morph (0 to 1)
+   is kept up to date by PhotoSection.jsx; everything visual is here.
    --------------------------------------------------------- */
 
+.me-morph-track {
+  display: none;
+}
+
 @media (max-width: 767px) {
-  .me-photo-pair[data-reveal] {
+  /* The scroll distance during which the photo stays in place. */
+  .me-memories {
+    height: calc(30rem + 110svh);
+  }
+
+  .me-photo-pair {
+    position: sticky;
+    top: 6.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+    gap: 0.9rem;
+    width: 100%;
+  }
+
+  /* Both photos sit on top of each other in the same place. */
+  .me-photo-pair .memory-frame {
+    grid-area: 1 / 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .me-photo-pair figcaption {
+    display: none;
+  }
+
+  /* The toddler photo stays underneath and disappears once today's photo is fully shown. */
+  .me-memories .me-photo-pair[data-reveal] .memory-frame--toddler,
+  .me-memories .me-photo-pair[data-reveal].is-visible .memory-frame--toddler {
+    opacity: min(1, calc((1 - var(--morph, 0)) * 10));
+    transform: none;
+    transition: none;
+  }
+
+  /* Today's photo fades in on top and settles into place. */
+  .me-memories .me-photo-pair[data-reveal] .memory-frame--now,
+  .me-memories .me-photo-pair[data-reveal].is-visible .memory-frame--now {
+    opacity: var(--morph, 0);
+    transform: scale(calc(1.04 - var(--morph, 0) * 0.04));
+    transition: none;
+  }
+
+  /* THEN ---o--- NOW progress line under the photo. */
+  .me-morph-track {
+    grid-area: 2 / 1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0 0.15rem;
+  }
+
+  .me-morph-label {
+    color: rgba(226, 232, 241, 0.9);
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+  }
+
+  .me-morph-label--then {
+    opacity: calc(1 - var(--morph, 0) * 0.65);
+  }
+
+  .me-morph-label--now {
+    opacity: calc(0.35 + var(--morph, 0) * 0.65);
+  }
+
+  .me-morph-line {
+    position: relative;
+    display: block;
+    height: 1px;
+    background: rgba(214, 225, 240, 0.16);
+  }
+
+  .me-morph-line i {
+    position: absolute;
+    inset: 0;
+    background: rgba(191, 219, 254, 0.85);
+    transform: scaleX(var(--morph, 0));
+    transform-origin: left center;
+  }
+
+  .me-morph-line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(var(--morph, 0) * 100%);
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: #dbeafe;
+    box-shadow: 0 0 9px rgba(150, 195, 245, 0.65);
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* With reduced motion on a phone, the two photos are simply shown one after the other. */
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .me-memories {
+    height: auto;
+  }
+
+  .me-photo-pair {
+    position: static;
     gap: 1.6rem;
   }
 
-  .me-photo-pair[data-reveal] .memory-frame {
-    width: 100%;
-    justify-self: stretch;
+  .me-photo-pair .memory-frame {
+    grid-area: auto;
   }
 
-  .me-photo-pair[data-reveal] .memory-frame--toddler {
-    transform: translate(-1.4rem, 1.4rem) scale(0.97);
+  .me-photo-pair figcaption {
+    display: block;
   }
 
-  .me-photo-pair[data-reveal] .memory-frame--now {
-    transform: translate(1.4rem, 1.4rem) scale(0.97);
-  }
-
-  .me-photo-pair[data-reveal].is-visible .memory-frame--toddler,
-  .me-photo-pair[data-reveal].is-visible .memory-frame--now {
+  .me-memories .me-photo-pair[data-reveal] .memory-frame--toddler,
+  .me-memories .me-photo-pair[data-reveal].is-visible .memory-frame--toddler,
+  .me-memories .me-photo-pair[data-reveal] .memory-frame--now,
+  .me-memories .me-photo-pair[data-reveal].is-visible .memory-frame--now {
+    opacity: 1;
     transform: none;
   }
 
-  .me-photo-pair .memory-frame--toddler figcaption {
-    text-align: left;
+  .me-morph-track {
+    display: none;
   }
 }
 

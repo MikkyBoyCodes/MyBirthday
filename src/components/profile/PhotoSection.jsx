@@ -1,5 +1,59 @@
 import { Camera, Sparkles, Users } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 import './photo-section.css'
+
+// On phones the "then" photo gradually turns into the "now" photo while the page is scrolled.
+// This keeps one number (--morph, from 0 to 1) up to date; all the visuals are in the CSS files.
+function useMorphProgress(trackRef) {
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return undefined
+
+    const phone = window.matchMedia('(max-width: 767px)')
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let frame = 0
+
+    const update = () => {
+      frame = 0
+
+      if (!phone.matches || reducedMotion.matches) {
+        track.style.removeProperty('--morph')
+        return
+      }
+
+      const stage = track.firstElementChild
+      const trackBox = track.getBoundingClientRect()
+      const stageHeight = stage.getBoundingClientRect().height
+      const stickyTop = parseFloat(window.getComputedStyle(stage).top) || 0
+      const distance = trackBox.height - stageHeight
+      const raw = distance > 0 ? (stickyTop - trackBox.top) / distance : 0
+
+      // The photos rest briefly at the start and the end of the change.
+      const spread = Math.min(1, Math.max(0, (raw - 0.12) / 0.76))
+      const eased = spread * spread * (3 - 2 * spread)
+
+      track.style.setProperty('--morph', eased.toFixed(3))
+    }
+
+    const request = () => {
+      if (!frame) frame = window.requestAnimationFrame(update)
+    }
+
+    update()
+    window.addEventListener('scroll', request, { passive: true })
+    window.addEventListener('resize', request)
+    phone.addEventListener('change', request)
+    reducedMotion.addEventListener('change', request)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', request)
+      window.removeEventListener('resize', request)
+      phone.removeEventListener('change', request)
+      reducedMotion.removeEventListener('change', request)
+    }
+  }, [trackRef])
+}
 
 function ImageFrame({ src, alt, label, caption, className = '' }) {
   return (
@@ -24,6 +78,9 @@ function ImageFrame({ src, alt, label, caption, className = '' }) {
 }
 
 export default function PhotoSection() {
+  const morphTrackRef = useRef(null)
+  useMorphProgress(morphTrackRef)
+
   return (
     <section id="me" className="story-section me-section section-anchor">
       <div className="me-copy">
@@ -34,10 +91,16 @@ export default function PhotoSection() {
         </p>
       </div>
 
-      <div className="me-memories">
+      <div className="me-memories" ref={morphTrackRef}>
         <div className="me-photo-pair" data-reveal="me-pair">
           <ImageFrame src="/images/toddler.jpeg" alt="Michael as a toddler" label="TODDLER PHOTO" caption="MICHAEL · THEN" className="memory-frame--toddler" />
           <ImageFrame src="/images/me.jpeg" alt="Michael in 2026" label="CURRENT PHOTO" caption="MICHAEL · NOW" className="memory-frame--now" />
+
+          <div className="me-morph-track" aria-hidden="true">
+            <span className="me-morph-label me-morph-label--then">THEN</span>
+            <span className="me-morph-line"><i /></span>
+            <span className="me-morph-label me-morph-label--now">NOW</span>
+          </div>
         </div>
       </div>
 

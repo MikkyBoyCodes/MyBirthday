@@ -17,12 +17,29 @@ function displayTrackName(track) {
   return track?.title?.trim() || fileNameFromPath(track?.file) || 'Untitled track'
 }
 
-// Which slice of the sound spectrum each bar listens to (bass on the left, highs on the right).
-const BAR_RANGES = [[1, 2], [2, 3], [3, 5], [5, 8], [8, 13], [13, 22], [22, 40]]
-// Music carries far less energy in the highs, so higher bars are lifted (in dB) to move as visibly as the bass.
-const BAR_TILT_DB = [0, 3, 7, 12, 18, 24, 30]
+// The bars listen to the music from deep bass (left) to bright highs (right).
+const BAR_COUNT = 16
+const FFT_SIZE = 512
+const FIRST_BIN = 1
+const LAST_BIN = 112
 const ANALYSER_MIN_DB = -110
 const ANALYSER_RANGE_DB = 100
+
+// Each bar covers its own slice of the spectrum, spaced the way the ear hears pitch.
+const BAR_RANGES = (() => {
+  const ranges = []
+  let from = FIRST_BIN
+  for (let index = 0; index < BAR_COUNT; index += 1) {
+    const edge = Math.round(FIRST_BIN * Math.pow(LAST_BIN / FIRST_BIN, (index + 1) / BAR_COUNT))
+    const to = Math.max(edge, from + 1)
+    ranges.push([from, to])
+    from = to
+  }
+  return ranges
+})()
+
+// Music carries far less energy in the highs, so higher bars are lifted (in dB) to move as visibly as the bass.
+const BAR_TILT_DB = BAR_RANGES.map((range, index) => index * 1.7)
 
 function MusicVisualizer({ isPlaying, analyserRef, loudness }) {
   const barsRef = useRef([])
@@ -37,9 +54,10 @@ function MusicVisualizer({ isPlaying, analyserRef, loudness }) {
     const levels = new Array(BAR_RANGES.length).fill(0)
     const peaks = new Array(BAR_RANGES.length).fill(0.3)
 
+    // Each bar's height is one CSS variable; the look of the bars lives in sound-control.css.
     const paint = () => {
       bars.forEach((bar, index) => {
-        if (bar) bar.style.transform = `scaleY(${(0.12 + levels[index] * 0.88).toFixed(3)})`
+        if (bar) bar.style.setProperty('--level', (0.12 + levels[index] * 0.88).toFixed(3))
       })
     }
 
@@ -65,6 +83,7 @@ function MusicVisualizer({ isPlaying, analyserRef, loudness }) {
       }
 
       if (analyser) {
+        if (analyser.fftSize !== FFT_SIZE) analyser.fftSize = FFT_SIZE
         if (!data || data.length !== analyser.frequencyBinCount) {
           data = new Uint8Array(analyser.frequencyBinCount)
         }
@@ -82,9 +101,9 @@ function MusicVisualizer({ isPlaying, analyserRef, loudness }) {
           // Each bar slowly adapts to how loud its own part of the song is,
           // then the player volume scales it, so a quieter volume still shows smaller bars.
           peaks[index] = Math.max(raw, peaks[index] * 0.9985)
-          const gain = Math.min(4, Math.max(1, 0.85 / Math.max(peaks[index], 0.05)))
+          const gain = Math.min(2.2, Math.max(1, 0.85 / Math.max(peaks[index], 0.05)))
           const volumeScale = 0.3 + 0.7 * loudnessRef.current
-          const target = Math.min(1, Math.pow(raw * gain, 1.2) * volumeScale)
+          const target = Math.min(1, Math.pow(raw * gain, 1.55) * volumeScale)
           const previous = levels[index]
           levels[index] = target > previous
             ? previous + (target - previous) * 0.65
@@ -176,10 +195,14 @@ export default function SoundControl({
   return (
     <div className={`sound-dock ${open ? 'is-open' : ''}`}>
       {open && (
+        <button className="music-backdrop" type="button" onClick={() => setOpen(false)} aria-label="Close playlist" tabIndex={-1} />
+      )}
+
+      {open && (
         <div className="music-panel" onKeyDown={handlePanelKeys}>
           <div className="music-panel-head">
             <div>
-              <span>PLAYLIST</span>
+              <span>PLAYLIST · {String(currentTrack + 1).padStart(2, '0')} / {String(playlist.length).padStart(2, '0')}</span>
               <strong>{trackName}</strong>
             </div>
             <div className="music-panel-actions">

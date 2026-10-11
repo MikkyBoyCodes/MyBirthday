@@ -5,6 +5,6 @@
 export const PLAYLIST = [
   { file: '/music/burnaboy.mp3' },
   { file: '/music/yallah.mp3' },
-  { file: '/music/track-3.mp3' },
+  { file: '/music/Tiki Tiki.mp3' },
   { file: '/music/track-4.mp3' },
 ]

@@ -1,4 +1,6 @@
-import './navbar.css'
+import { useEffect, useState } from 'react'
+import './Navbar.css'
+
 
 const links = [
   { id: 'birthday', label: 'Birthday' },
@@ -7,55 +9,127 @@ const links = [
   { id: 'people', label: 'My People' },
 ]
 
-// Sections that must be fully visible once the page lands on them.
-const MUST_SEE = { chapter: '.chapter-code-stack' }
+// Order of the places the page can land on, from top to bottom.
+const LANDING_ORDER = ['birthday', 'chapter', 'me', 'people', 'wish']
 
-export default function Navbar({ activeSection }) {
-  const scrollTo = (id) => {
-    const element = document.getElementById(id)
-    if (!element) return
+// On phones and tablets every section has a lot of empty space above its heading,
+// so the page lands on the small heading label instead of the top of the section.
+const COMPACT_QUERY = '(max-width: 1023px)'
+const COMPACT_TARGETS = {
+  chapter: '#chapter .eyebrow',
+  me: '#me .eyebrow',
+  people: '#people',
+  wish: '#wish .eyebrow',
+}
+const GAP_WIDE = 18
+const GAP_COMPACT = 22
 
-    const navHeight = document.querySelector('.site-nav')?.getBoundingClientRect().height ?? 68
+function isCompact() {
+  return window.matchMedia(COMPACT_QUERY).matches
+}
 
-    // Measured fresh every time, because images and reveal animations change the layout while scrolling.
-    const getTarget = () => {
-      let top = element.getBoundingClientRect().top + window.scrollY - navHeight - 18
-      const mustSee = MUST_SEE[id] && element.querySelector(MUST_SEE[id])
-      if (mustSee) {
-        const bottom = mustSee.getBoundingClientRect().bottom + window.scrollY
-        // If the important part would be low on the screen (near the music bar), scroll a little further.
-        top = Math.max(top, bottom - (window.innerHeight * 0.82 - 8))
-      }
-      const maxTop = document.documentElement.scrollHeight - window.innerHeight
-      return Math.max(0, Math.min(top, maxTop))
+function getNavHeight() {
+  return document.querySelector('.site-nav')?.getBoundingClientRect().height ?? 68
+}
+
+function getLandingElement(id) {
+  const section = document.getElementById(id)
+  if (!section) return null
+  if (isCompact() && COMPACT_TARGETS[id]) {
+    return document.querySelector(COMPACT_TARGETS[id]) || section
+  }
+  return section
+}
+
+// Measured fresh every time, because images and animations can move the layout.
+function getLandingTop(id) {
+  const element = getLandingElement(id)
+  if (!element) return null
+
+  const gap = isCompact() ? GAP_COMPACT : GAP_WIDE
+  const top = element.getBoundingClientRect().top + window.scrollY - getNavHeight() - gap
+  const maxTop = document.documentElement.scrollHeight - window.innerHeight
+
+  return Math.max(0, Math.min(top, maxTop))
+}
+
+export default function Navbar() {
+  const [current, setCurrent] = useState('birthday')
+
+  // The highlighted link always matches the part of the page being viewed.
+  useEffect(() => {
+    let frame = 0
+
+    const update = () => {
+      frame = 0
+      const line = getNavHeight() + window.innerHeight * 0.3
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4
+      let active = 'birthday'
+
+      LANDING_ORDER.forEach((id) => {
+        const element = getLandingElement(id)
+        if (element && element.getBoundingClientRect().top <= line) active = id
+      })
+
+      setCurrent(atBottom ? 'wish' : active)
     }
 
-    window.scrollTo({ top: getTarget(), behavior: 'smooth' })
+    const request = () => {
+      if (!frame) frame = window.requestAnimationFrame(update)
+    }
 
-    // After the smooth scroll settles, check the landing spot again and correct it if the layout moved.
+    update()
+    window.addEventListener('scroll', request, { passive: true })
+    window.addEventListener('resize', request)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', request)
+      window.removeEventListener('resize', request)
+    }
+  }, [])
+
+  const scrollTo = (id) => {
+    const target = getLandingTop(id)
+    if (target === null) return
+
+    window.scrollTo({ top: target, behavior: 'smooth' })
+
+    // When the smooth scroll has finished, correct the position once if the layout moved meanwhile.
+    // If the visitor scrolls by hand, stop at once.
+    const takeOver = ['wheel', 'touchstart', 'keydown', 'pointerdown']
+    let stopped = false
     let lastY = window.scrollY
     let stableFrames = 0
     let frames = 0
-    let corrections = 0
+
+    const stop = () => {
+      stopped = true
+      takeOver.forEach((name) => window.removeEventListener(name, stop, true))
+    }
+    takeOver.forEach((name) => window.addEventListener(name, stop, { capture: true, passive: true }))
 
     const settle = () => {
+      if (stopped) return
       frames += 1
       const y = window.scrollY
       stableFrames = Math.abs(y - lastY) < 0.5 ? stableFrames + 1 : 0
       lastY = y
 
-      if (stableFrames >= 6) {
-        const target = getTarget()
-        if (Math.abs(target - y) > 3 && corrections < 3) {
-          corrections += 1
-          stableFrames = 0
-          window.scrollTo({ top: target, behavior: 'smooth' })
-        } else {
-          return
+      if (stableFrames >= 8) {
+        const corrected = getLandingTop(id)
+        if (corrected !== null && Math.abs(corrected - y) > 3) {
+          window.scrollTo({ top: corrected, behavior: 'smooth' })
         }
+        stop()
+        return
       }
 
-      if (frames < 240) window.requestAnimationFrame(settle)
+      if (frames < 240) {
+        window.requestAnimationFrame(settle)
+      } else {
+        stop()
+      }
     }
 
     window.requestAnimationFrame(settle)
@@ -68,21 +142,17 @@ export default function Navbar({ activeSection }) {
       </button>
 
       <nav className="nav-links" aria-label="Birthday sections">
-        {links.map((link) => {
-          const isActive = activeSection === link.id || (link.id === 'people' && activeSection === 'me')
-
-          return (
-            <button
-              key={link.id}
-              className={`nav-link ${isActive ? 'is-active' : ''}`}
-              type="button"
-              onClick={() => scrollTo(link.id)}
-              aria-label={`Go to ${link.label}`}
-            >
-              <span>{link.label}</span>
-            </button>
-          )
-        })}
+        {links.map((link) => (
+          <button
+            key={link.id}
+            className={`nav-link ${current === link.id ? 'is-active' : ''}`}
+            type="button"
+            onClick={() => scrollTo(link.id)}
+            aria-label={`Go to ${link.label}`}
+          >
+            <span>{link.label}</span>
+          </button>
+        ))}
       </nav>
 
       <button className="nav-wish" type="button" onClick={() => scrollTo('wish')}>
